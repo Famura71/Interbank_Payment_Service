@@ -1,4 +1,8 @@
 <web-app>
+    <!-- Welcome file -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 
     <!-- SOAP Dispatcher -->
     <servlet>
