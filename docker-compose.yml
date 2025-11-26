@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: mysql:8.0             # Resmi MySQL Docker image’i
+    container_name: Database     # Container’a özel isim
+    restart: always               # Eğer container kapanırsa otomatik yeniden başlat
+    environment:                  # MySQL ortam değişkenleri
+      MYSQL_ROOT_PASSWORD: root   # root şifresi
+      MYSQL_DATABASE: mydb        # Başlangıçta oluşturulacak veritabanı
+      MYSQL_USER: user            # Normal kullanıcı
+      MYSQL_PASSWORD: pass        # Normal kullanıcı şifresi
+    ports:
+      - "3306:3306"               # Docker portunu Mac’in portuna aç
+    volumes:
+      - mysql_data:/var/lib/mysql # Verileri kalıcı saklamak için volume
+
+volumes:
+  mysql_data:                     # Volume tanımı (container silinse bile veriler saklanır)
