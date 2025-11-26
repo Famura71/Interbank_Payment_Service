@@ -113,10 +113,10 @@
         </dependency>
 
         <!-- MySQL Connector -->
-        <dependency>
+       <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.1.1</version>
+            <version>8.0.33</version> <!-- Mevcut stabil sürüm -->
         </dependency>
 
         <!-- Spring ORM + Transaction (Hibernate ile entegrasyon için) -->
