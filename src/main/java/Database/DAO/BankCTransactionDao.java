@@ -36,7 +36,7 @@ public class BankCTransactionDao {
         getSession().remove(tr);
     }
     // READ (by ID)
-    public BankCTransactionDao getById(Long id) {
+    public BankCTransaction getById(Long id) {
         return getSession().find(BankCTransaction.class, id);
     }
 

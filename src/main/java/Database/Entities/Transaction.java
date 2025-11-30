@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id; // ← TXN-20251129235959
+    private Long id;
 
     // Sending Account
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,11 +43,8 @@ public class Transaction {
 
     //Getetrs-Setters
     
-    public String getId(){
+    public Long getId(){
         return id;
-    }
-    public void setId(String id){
-        this.id = id;
     }
 
     public User getSendingUser(){
