@@ -65,4 +65,11 @@ public class UserDao {
                 .setParameter("bankName", bankName)
                 .uniqueResult();
     }
+    // User isminden Kullanıcıyı bulma (KAFKA İÇİN GEREKLİ)
+    public User getByName(String name) {
+        return getSession()
+                .createQuery("FROM User WHERE name = :name", User.class)
+                .setParameter("name", name)
+                .uniqueResult();
+    }
 }
