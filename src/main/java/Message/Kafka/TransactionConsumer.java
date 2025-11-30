@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import Database.DAO.UserDao; // ARTIK ACCOUNT DEĞİL USER DAO
+import Database.DAO.UserDao;
 import Database.DAO.BankATransactionDao;
 import Database.DAO.BankBTransactionDao;
 import Database.DAO.BankCTransactionDao;
-import Database.Entities.User; // ARTIK USER ENTITY
+import Database.Entities.User;
 import Database.Entities.BankATransaction;
 import Database.Entities.BankBTransaction;
 import Database.Entities.BankCTransaction;
@@ -21,7 +21,7 @@ import Database.Entities.BankCTransaction;
 public class TransactionConsumer {
 
     @Autowired
-    private UserDao userDao; // Alıcıyı bulmak için UserDAO kullanıyoruz
+    private UserDao userDao;
 
     @Autowired
     private BankATransactionDao bankADao;
@@ -40,37 +40,22 @@ public class TransactionConsumer {
         try {
             JsonNode json = objectMapper.readTree(message);
 
-            // Null kontrolü
-            if (!json.has("receiver") || !json.has("amount")) {
-                System.err.println("❌ HATA: Eksik veri geldi.");
-                return;
-            }
+            // Mesaj tipini kontrol et (TRANSFER, DEPOSIT, WITHDRAW)
+            String type = json.has("type") ? json.get("type").asText() : "TRANSFER";
 
-            String receiverName = json.get("receiver").asText();
-            double amount = json.get("amount").asDouble();
+            switch (type) {
+                case "DEPOSIT":
+                    handleDeposit(json);
+                    break;
 
-            // 1. Alıcı Kullanıcıyı Bul (getByName metodunu UserDao'ya eklediğini varsayıyoruz)
-            User receiverUser = userDao.getByName(receiverName);
+                case "WITHDRAW":
+                    handleWithdraw(json);
+                    break;
 
-            if (receiverUser != null) {
-                // 2. Parayı Yükle (Direkt User'ın bakiyesine)
-                double yeniBakiye = receiverUser.getBalance() + amount;
-                receiverUser.setBalance(yeniBakiye);
-
-                // 3. Güncellemeyi Kaydet
-                userDao.update(receiverUser);
-                System.out.println("💰 Bakiye Güncellendi: " + receiverName + " (Yeni Bakiye: " + yeniBakiye + ")");
-
-                // 4. HANGİ BANKA?
-                if (receiverUser.getBank() != null) {
-                    String bankName = receiverUser.getBank().getBankName();
-
-                    // 5. İşlemi Log Tablosuna Yaz
-                    saveTransactionToCorrectBank(bankName, receiverUser, amount);
-                }
-
-            } else {
-                System.err.println("❌ HATA: Kullanıcı bulunamadı -> " + receiverName);
+                case "TRANSFER":
+                default:
+                    handleTransfer(json);
+                    break;
             }
 
         } catch (Exception e) {
@@ -79,17 +64,117 @@ public class TransactionConsumer {
         }
     }
 
-    private void saveTransactionToCorrectBank(String bankName, User user, double amount) {
+    /**
+     * TRANSFER işlemi (Ahmet → Mehmet)
+     * Sadece ALICI tarafı işlenir (gönderici SOAP'ta çekildi)
+     */
+    private void handleTransfer(JsonNode json) {
+        if (!json.has("receiver") || !json.has("amount")) {
+            System.err.println("❌ HATA: TRANSFER - Eksik veri (receiver veya amount yok)");
+            return;
+        }
 
-        // NOT: BankATransaction vb. sınıflarında "setAccount" yerine "setUser"
-        // metodunu kullanacak şekilde güncellemiş olmalısın.
+        String receiverName = json.get("receiver").asText();
+        double amount = json.get("amount").asDouble();
 
+        User receiverUser = userDao.getByName(receiverName);
+
+        if (receiverUser != null) {
+            // Alıcıya parayı ekle
+            double newBalance = receiverUser.getBalance() + amount;
+            receiverUser.setBalance(newBalance);
+            userDao.update(receiverUser);
+
+            System.out.println("💰 TRANSFER: " + receiverName + " → +" + amount + " TL (Yeni Bakiye: " + newBalance + ")");
+
+            // İşlemi logla
+            if (receiverUser.getBank() != null) {
+                saveTransactionToCorrectBank(receiverUser.getBank().getBankName(), receiverUser, amount, "INCOMING_TRANSFER");
+            }
+        } else {
+            System.err.println("❌ HATA: Alıcı kullanıcı bulunamadı -> " + receiverName);
+        }
+    }
+
+    /**
+     * DEPOSIT işlemi (Para Yatırma)
+     * Kullanıcının kendi hesabına para ekler
+     */
+    private void handleDeposit(JsonNode json) {
+        if (!json.has("userName") || !json.has("amount")) {
+            System.err.println("❌ HATA: DEPOSIT - Eksik veri (userName veya amount yok)");
+            return;
+        }
+
+        String userName = json.get("userName").asText();
+        double amount = json.get("amount").asDouble();
+
+        User user = userDao.getByName(userName);
+
+        if (user != null) {
+            // Kullanıcıya parayı ekle
+            double newBalance = user.getBalance() + amount;
+            user.setBalance(newBalance);
+            userDao.update(user);
+
+            System.out.println("💵 DEPOSIT: " + userName + " → +" + amount + " TL (Yeni Bakiye: " + newBalance + ")");
+
+            // İşlemi logla
+            if (user.getBank() != null) {
+                saveTransactionToCorrectBank(user.getBank().getBankName(), user, amount, "DEPOSIT");
+            }
+        } else {
+            System.err.println("❌ HATA: Kullanıcı bulunamadı -> " + userName);
+        }
+    }
+
+    /**
+     * WITHDRAW işlemi (Para Çekme)
+     * Kullanıcının hesabından para çeker
+     */
+    private void handleWithdraw(JsonNode json) {
+        if (!json.has("userName") || !json.has("amount")) {
+            System.err.println("❌ HATA: WITHDRAW - Eksik veri (userName veya amount yok)");
+            return;
+        }
+
+        String userName = json.get("userName").asText();
+        double amount = json.get("amount").asDouble();
+
+        User user = userDao.getByName(userName);
+
+        if (user != null) {
+            // Bakiye kontrolü
+            if (user.getBalance() >= amount) {
+                // Kullanıcıdan parayı çek
+                double newBalance = user.getBalance() - amount;
+                user.setBalance(newBalance);
+                userDao.update(user);
+
+                System.out.println("💸 WITHDRAW: " + userName + " → -" + amount + " TL (Yeni Bakiye: " + newBalance + ")");
+
+                // İşlemi logla
+                if (user.getBank() != null) {
+                    saveTransactionToCorrectBank(user.getBank().getBankName(), user, amount, "WITHDRAWAL");
+                }
+            } else {
+                System.err.println("❌ HATA: Yetersiz bakiye! " + userName + " → Bakiye: " + user.getBalance() + " TL < " + amount + " TL");
+            }
+        } else {
+            System.err.println("❌ HATA: Kullanıcı bulunamadı -> " + userName);
+        }
+    }
+
+    /**
+     * İşlemi doğru banka tablosuna kaydet
+     */
+    private void saveTransactionToCorrectBank(String bankName, User user, double amount, String logType) {
         switch (bankName) {
             case "Bank A":
                 BankATransaction trA = new BankATransaction();
-                trA.setUser(user); // Entity güncellemesi gerekli!
+                trA.setUser(user);
                 trA.setAmount(amount);
-                trA.setLogType("INCOMING_TRANSFER");
+                trA.setLogType(logType);
                 bankADao.save(trA);
                 System.out.println("✅ Log Bank A tablosuna yazıldı.");
                 break;
@@ -98,7 +183,7 @@ public class TransactionConsumer {
                 BankBTransaction trB = new BankBTransaction();
                 trB.setUser(user);
                 trB.setAmount(amount);
-                trB.setLogType("INCOMING_TRANSFER");
+                trB.setLogType(logType);
                 bankBDao.save(trB);
                 System.out.println("✅ Log Bank B tablosuna yazıldı.");
                 break;
@@ -107,7 +192,7 @@ public class TransactionConsumer {
                 BankCTransaction trC = new BankCTransaction();
                 trC.setUser(user);
                 trC.setAmount(amount);
-                trC.setLogType("INCOMING_TRANSFER");
+                trC.setLogType(logType);
                 bankCDao.save(trC);
                 System.out.println("✅ Log Bank C tablosuna yazıldı.");
                 break;

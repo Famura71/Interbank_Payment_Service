@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:sws="http://www.springframework.org/schema/web-services"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -10,11 +11,17 @@
         http://www.springframework.org/schema/web-services
         https://www.springframework.org/schema/web-services/web-services.xsd">
 
+    <!-- HibernateConfig'i dahil et (ÖNEMLİ!) -->
+    <bean class="Database.Config.HibernateConfig"/>
+
     <!-- Api klasörünü tara -->
     <context:component-scan base-package="Api"/>
-    
+
     <!-- Message klasörünü tara (Kafka Producer için) -->
     <context:component-scan base-package="Message"/>
+
+    <!-- Database klasörünü tara (UserDao için) -->
+    <context:component-scan base-package="Database"/>
 
     <!-- SOAP endpoint'leri aktif et -->
     <sws:annotation-driven/>
