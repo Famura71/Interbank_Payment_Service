@@ -1,3 +1,10 @@
-D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\MyBean.java
-D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\org\example\Main.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\Api\Soap\PaymentRequest.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\Api\Soap\PaymentResponse.java
 D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\TestSpringContext.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\MyBean.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\Database\Entities\Transaction.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\Database\Entities\User.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\Api\Soap\PaymentEndpoint.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\Database\Entities\Card.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\Database\Entities\Account.java
+D:\DEV\Interbank_Payment_Service\Interbank_Payment_Service\src\main\java\org\example\ServerLauncher.java
