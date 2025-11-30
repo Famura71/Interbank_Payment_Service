@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "bank_a_transactions")
+@Table(name = "bank_b_transactions")
 public class BankBTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
