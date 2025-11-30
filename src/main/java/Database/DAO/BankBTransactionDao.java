@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import Database.Entities.BankBTransaction;
 @Repository        // Spring'e bu sınıfın bir DAO/repository olduğunu söylüyor
 @Transactional     // Her metotta otomatik transaction aç/kapa
 
@@ -20,28 +21,28 @@ public class BankBTransactionDao {
     }
 
     // CREATE
-    public void save(BankBTransactionDao tr) {
+    public void save(BankBTransaction tr) {
         getSession().persist(tr);
     }
 
     // UPDATE
-    public void update(BankBTransactionDao tr) {
+    public void update(BankBTransaction tr) {
         getSession().merge(tr);
     }
 
     // DELETE
-    public void delete(BankBTransactionDao tr) {
+    public void delete(BankBTransaction tr) {
         getSession().remove(tr);
     }
     // READ (by ID)
-    public BankBTransactionDao getById(Long id) {
-        return getSession().find(BankBTransactionDao.class, id);
+    public BankBTransaction getById(Long id) {
+        return getSession().find(BankBTransaction.class, id);
     }
 
     // READ (all)
-    public List<BankBTransactionDao> getAll() {
+    public List<BankBTransaction> getAll() {
         return getSession()
-                .createQuery("FROM BankBTransactionDao", BankBTransactionDao.class)
+                .createQuery("FROM BankBTransaction", BankBTransaction.class)
                 .getResultList();
     }
 
