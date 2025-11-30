@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank A</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div class="container bank-page" id="bankA-container">
+    <h1 class="main-title" onclick="window.location.href='index.html'">🏦 Interbank Payment Service</h1>
+
+    <!-- Login Formu -->
+    <div id="login-section" style="display: none;">
+        <div class="login-header bank-a-header">
+            <h2>Bank A Giriş</h2>
+        </div>
+
+        <form class="login-form" onsubmit="return loginBankA(event)">
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" id="username" name="username" required placeholder="Kullanıcı adınızı girin">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" required placeholder="Şifrenizi girin">
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+
+            <button type="submit" class="btn-login btn-bank-a">Giriş Yap</button>
+            <button type="button" class="btn-back-login" onclick="window.location.href='index.html'">← Ana Sayfaya Dön</button>
+        </form>
+    </div>
+
+    <!-- İçerik Bölümü -->
+    <div id="content-section" style="display: none;">
+        <div class="bank-header">
+            <h2>Bank A</h2>
+            <div>
+                <button class="btn-logout" onclick="logoutBankA()">Çıkış</button>
+                <button class="btn-back" onclick="window.location.href='index.html'">← Geri</button>
+            </div>
+        </div>
+
+        <div class="bank-content-box bank-a-box">
+            <h3>Bank A'ya Hoş Geldiniz</h3>
+            <p>Buraya Bank A için özel içerik ekleyebilirsin.</p>
+        </div>
+    </div>
+</div>
+<script src="scripts/login.js"></script>
+<script>
+    // Sayfa yüklendiğinde kontrol et
+    window.onload = function() {
+        if (sessionStorage.getItem('bankA_logged_in')) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('content-section').style.display = 'block';
+        } else {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('content-section').style.display = 'none';
+        }
+    };
+</script>
+</body>
+</html>
