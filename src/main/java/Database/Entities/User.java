@@ -27,6 +27,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @JoinColumn(nullable = false)
+    private double balance;
     //use id from Bank as foreign key
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id", nullable = false)
@@ -71,5 +73,11 @@ public class User {
     }
     public void setBank(Bank bank){
         this.bank = bank;
+    }
+    public double getBalance(){
+        return balance;
+    }
+    public void setBalance(double balance){
+        this.balance = balance;
     }
 }

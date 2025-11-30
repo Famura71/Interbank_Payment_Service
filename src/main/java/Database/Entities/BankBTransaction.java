@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "bank_b_transactions")
 public class BankBTransaction {
-    @Id
+   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id; // ← TXN-20251129235959
 
@@ -32,8 +32,8 @@ public class BankBTransaction {
     private double amount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public String getId(){
         return id;
@@ -53,10 +53,10 @@ public class BankBTransaction {
     public void setAmount(double amount){
         this.amount = amount;
     }
-    public Account getAccount(){
-        return account;
+    public User getUser(){
+        return user;
     }
-    public void setAccount(Account account){
-        this.account = account;
+    public void setUser(User user){
+        this.user = user;
     }
 }

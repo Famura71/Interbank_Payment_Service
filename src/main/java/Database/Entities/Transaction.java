@@ -23,13 +23,13 @@ public class Transaction {
 
     // Sending Account
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sending_account_id", nullable = false)
-    private Account sendingAccount;
+    @JoinColumn(name = "sending_user_id", nullable = false)
+    private User sendingUser;
 
     // Recieving Account
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiving_account_id", nullable = false)
-    private Account receivingAccount;
+    @JoinColumn(name = "receiving_user_id", nullable = false)
+    private User receivingUser;
 
     @Column(nullable = false)
     private double amount;
@@ -50,18 +50,18 @@ public class Transaction {
         this.id = id;
     }
 
-    public Account getSendingAccount(){
-        return sendingAccount;
+    public User getSendingUser(){
+        return sendingUser;
     }
-    public void setSendingAccount(Account sendingAccount){
-        this.sendingAccount = sendingAccount;
+    public void setSendingAccount(User sendingUser){
+        this.sendingUser = sendingUser;
     }
 
-    public Account getReceivingAccount(){
-        return receivingAccount;
+    public User getReceivingAccount(){
+        return receivingUser;
     }
-    public void setReceivingAccount(Account receivingAccount){
-        this.receivingAccount = receivingAccount;
+    public void setReceivingAccount(User receivingUser){
+        this.receivingUser = receivingUser;
     }
 
     public double getAmount(){
