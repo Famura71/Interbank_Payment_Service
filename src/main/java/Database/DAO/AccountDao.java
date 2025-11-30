@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import Database.Entities.Account;
+import Database.Entities.User;
 
 @Repository        // Spring'e bu sınıfın bir DAO/repository olduğunu söylüyor
 @Transactional     // Her metotta otomatik transaction aç/kapa
@@ -45,6 +46,12 @@ public class AccountDao {
                 .createQuery("FROM Account", Account.class)
                 .getResultList();
     }
-
+// FIND by User
+    public List<Account> getByUser(User user) {
+        return getSession()
+                .createQuery("FROM Account a WHERE a.user = :user", Account.class)
+                .setParameter("user", user)
+                .getResultList();
+    }
 
 }

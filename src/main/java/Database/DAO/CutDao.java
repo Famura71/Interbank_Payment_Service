@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import Database.Entities.Bank;
 import Database.Entities.Cut;
 
 @Repository        // Spring'e bu sınıfın bir DAO/repository olduğunu söylüyor
@@ -44,5 +45,13 @@ public class CutDao {
         return getSession()
                 .createQuery("FROM Cut", Cut.class)
                 .getResultList();
+    }
+    // FIND by 2 Bank objects
+    public Cut getByBanks(Bank bank1, Bank bank2) {
+        return getSession()
+            .createQuery("FROM Cut c WHERE c.bank1 = :b1 AND c.bank2 = :b2", Cut.class)
+            .setParameter("b1", bank1)
+            .setParameter("b2", bank2)
+            .uniqueResult();
     }
 }

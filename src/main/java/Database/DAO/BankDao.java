@@ -45,6 +45,12 @@ public class BankDao {
                 .createQuery("FROM Bank", Bank.class)
                 .getResultList();
     }
-
+    // FIND BY bankName
+    public Bank getByBankName(String bankName) {
+        return getSession()
+                .createQuery("FROM Bank b WHERE b.bankName = :name", Bank.class)
+                .setParameter("name", bankName)
+                .uniqueResult();
+    }
 
 }
