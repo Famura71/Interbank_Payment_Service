@@ -17,12 +17,13 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
     private double balance;
 
-    //use id from Card as foreign key
+    //use id from User as foreign key
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card_id", nullable = false)
-    private Card card;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     //empty constructor to not get errors
     public Account() {}
@@ -41,10 +42,10 @@ public class Account {
     public void setBalance(double balance){
         this.balance = balance;
     }
-    public Card getCard(){
-        return card;
+    public User getUSer(){
+        return user;
     }
-    public void setCard(Card card){
-        this.card = card;
+    public void setUser(User user){
+        this.user = user;
     }
 }
