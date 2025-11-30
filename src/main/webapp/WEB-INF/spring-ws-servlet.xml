@@ -12,8 +12,11 @@
 
     <!-- Api klasörünü tara -->
     <context:component-scan base-package="Api"/>
+    
+    <!-- Message klasörünü tara (Kafka Producer için) -->
+    <context:component-scan base-package="Message"/>
 
-    <!-- SOAP endpoint’leri aktif et -->
+    <!-- SOAP endpoint'leri aktif et -->
     <sws:annotation-driven/>
 
     <!-- WSDL üretimi -->

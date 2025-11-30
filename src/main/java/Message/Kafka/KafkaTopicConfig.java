@@ -1,4 +1,4 @@
-package Kafka;
+package Message.Kafka;
 
 import java.util.HashMap;
 import java.util.Map;
