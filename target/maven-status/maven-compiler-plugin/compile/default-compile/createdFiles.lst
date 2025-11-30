@@ -1,3 +1,10 @@
+Database\Entities\Transaction.class
+Api\Soap\PaymentEndpoint.class
+Database\Entities\User.class
+Api\Soap\PaymentResponse.class
 TestSpringContext.class
+Api\Soap\PaymentRequest.class
+Database\Entities\Account.class
+Database\Entities\Card.class
 MyBean.class
-org\example\Main.class
+org\example\ServerLauncher.class
