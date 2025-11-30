@@ -8,12 +8,12 @@
 </head>
 <body>
 <div class="container bank-page" id="bankA-container">
-    <h1 class="main-title" onclick="window.location.href='index.html'">🏦 Interbank Payment Service</h1>
+    <h1 class="main-title" onclick="window.location.href='index.html'">Interbank Payment Service</h1>
 
     <!-- Login Formu -->
     <div id="login-section" style="display: none;">
         <div class="login-header bank-a-header">
-            <h2>Bank A Giriş</h2>
+            <h2>Bank A Giris</h2>
         </div>
 
         <form class="login-form" onsubmit="return loginBankA(event)">
@@ -23,43 +23,66 @@
             </div>
 
             <div class="form-group">
-                <label for="password">Şifre</label>
-                <input type="password" id="password" name="password" required placeholder="Şifrenizi girin">
+                <label for="password">Sifre</label>
+                <input type="password" id="password" name="password" required placeholder="Sifrenizi girin">
             </div>
 
             <div id="error-message" class="error-message" style="display: none; color: red; margin: 10px 0;"></div>
 
-            <button type="submit" class="btn-login btn-bank-a">Giriş Yap</button>
-            <button type="button" class="btn-back-login" onclick="window.location.href='index.html'">← Ana Sayfaya Dön</button>
+            <button type="submit" class="btn-login btn-bank-a">Giris Yap</button>
+            <button type="button" class="btn-back-login" onclick="window.location.href='index.html'">Ana Sayfaya Don</button>
         </form>
     </div>
 
-    <!-- İçerik Bölümü -->
+    <!-- Icerik Bolumu -->
     <div id="content-section" style="display: none;">
         <div class="bank-header">
             <h2>Bank A</h2>
             <div>
-                <button class="btn-logout" onclick="logoutBankA()">Çıkış</button>
-                <button class="btn-back" onclick="window.location.href='index.html'">← Geri</button>
+                <button class="btn-logout" onclick="logoutBankA()">Cikis</button>
+                <button class="btn-back" onclick="window.location.href='index.html'">Geri</button>
             </div>
         </div>
 
         <div class="bank-content-box bank-a-box">
-            <h3>Bank A'ya Hoş Geldiniz</h3>
-            <p>Buraya Bank A için özel içerik ekleyebilirsin.</p>
+            <div class="user-info">
+                <p id="bankA-user-name"></p>
+                <p id="bankA-user-email"></p>
+                <p id="bankA-user-balance"></p>
+            </div>
+            <h3>Bank A'ya Hos Geldiniz</h3>
+            <p>Buraya Bank A icin ozel icerik ekleyebilirsin.</p>
         </div>
     </div>
 </div>
 <script src="scripts/login.js"></script>
 <script>
-    // Sayfa yüklendiğinde kontrol et
+    // Sayfa yuklendiginde kontrol et
     window.onload = function() {
-        if (sessionStorage.getItem('bankA_logged_in')) {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('content-section').style.display = 'block';
+        const isLoggedIn = sessionStorage.getItem('bankA_logged_in') === 'true';
+        const loginSection = document.getElementById('login-section');
+        const contentSection = document.getElementById('content-section');
+
+        if (isLoggedIn) {
+            loginSection.style.display = 'none';
+            contentSection.style.display = 'block';
+
+            const userRaw = sessionStorage.getItem('bankA_user');
+            if (userRaw) {
+                try {
+                    const user = JSON.parse(userRaw);
+                    document.getElementById('bankA-user-name').textContent = user.name ? ('Isim: ' + user.name) : '';
+                    document.getElementById('bankA-user-email').textContent = user.email ? ('Email: ' + user.email) : '';
+                    if (typeof user.balance === 'number') {
+                        document.getElementById('bankA-user-balance').textContent = 'Bakiye: ' + user.balance.toFixed(2);
+                    }
+                } catch (e) {
+                    console.error('Kullanici bilgisi okunamadi', e);
+                }
+            }
         } else {
-            document.getElementById('login-section').style.display = 'block';
-            document.getElementById('content-section').style.display = 'none';
+            loginSection.style.display = 'block';
+            contentSection.style.display = 'none';
         }
     };
 </script>

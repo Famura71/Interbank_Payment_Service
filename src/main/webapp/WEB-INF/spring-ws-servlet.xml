@@ -1,34 +1,26 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:sws="http://www.springframework.org/schema/web-services"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:sws="http://www.springframework.org/schema/web-services"
        xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context
-        https://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/web-services
-        https://www.springframework.org/schema/web-services/web-services.xsd">
+           http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/web-services 
+           http://www.springframework.org/schema/web-services/web-services.xsd">
 
-    <!-- Api klasörünü tara -->
-    <context:component-scan base-package="Api"/>
-    
-    <!-- Message klasörünü tara (Kafka Producer için) -->
-    <context:component-scan base-package="Message"/>
+    <!-- Tüm gerekli bean'leri tara -->
+    <context:component-scan base-package="Database, Api.Soap, Message.Kafka"/>
 
-    <!-- SOAP endpoint'leri aktif et -->
     <sws:annotation-driven/>
 
-    <!-- WSDL üretimi -->
-    <bean id="paymentWsdl" class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
-        <property name="schema" ref="paymentSchema"/>
-        <property name="portTypeName" value="PaymentPort"/>
-        <property name="locationUri" value="/ws"/>
-        <property name="targetNamespace" value="http://interbank.com/payment"/>
-    </bean>
-
-    <bean id="paymentSchema" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/payment.xsd"/>
-    </bean>
+    <!-- WSDL yapılandırması -->
+    <sws:dynamic-wsdl id="paymentWsdl" 
+                      portTypeName="PaymentPort"
+                      locationUri="/ws"
+                      targetNamespace="http://example.org/payment">
+        <sws:xsd location="/WEB-INF/payment.xsd"/>
+    </sws:dynamic-wsdl>
 
 </beans>

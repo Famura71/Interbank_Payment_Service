@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = "Database") // Entity ve DAO paketlerini tara
+@ComponentScan(basePackages = {"Database", "Message.Kafka"}) // ← Kafka paketini ekle
 public class HibernateConfig {
 
     // 1️⃣ DataSource: MySQL bağlantısı

@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Database.Entities.User;
 
-@Repository        // Spring'e bu sınıfın bir DAO/repository olduğunu söylüyor
-@Transactional     // Her metotta otomatik transaction aç/kapa
+@Repository        // Spring'e bu sinifin bir DAO/repository oldugunu soyluyor
+@Transactional     // Her metotta otomatik transaction ac/kapa
 public class UserDao {
 
     @Autowired
@@ -56,10 +56,13 @@ public class UserDao {
                 .uniqueResult();
     }
     
-    // Login için: email, password ve banka kontrolü
+    // Login icin: email, password ve banka kontrolu (bank fetch edilerek)
     public User login(String email, String password, String bankName) {
         return getSession()
-                .createQuery("FROM User u WHERE u.email = :email AND u.password = :password AND u.bank.bankName = :bankName", User.class)
+                .createQuery(
+                    "SELECT u FROM User u JOIN FETCH u.bank b WHERE u.email = :email AND u.password = :password AND b.bankName = :bankName",
+                    User.class
+                )
                 .setParameter("email", email)
                 .setParameter("password", password)
                 .setParameter("bankName", bankName)
