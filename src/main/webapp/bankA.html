@@ -18,8 +18,8 @@
 
         <form class="login-form" onsubmit="return loginBankA(event)">
             <div class="form-group">
-                <label for="username">Kullanıcı Adı</label>
-                <input type="text" id="username" name="username" required placeholder="Kullanıcı adınızı girin">
+                <label for="username">Email</label>
+                <input type="email" id="username" name="username" required placeholder="Email adresinizi girin">
             </div>
 
             <div class="form-group">
@@ -27,7 +27,7 @@
                 <input type="password" id="password" name="password" required placeholder="Şifrenizi girin">
             </div>
 
-            <div id="error-message" class="error-message"></div>
+            <div id="error-message" class="error-message" style="display: none; color: red; margin: 10px 0;"></div>
 
             <button type="submit" class="btn-login btn-bank-a">Giriş Yap</button>
             <button type="button" class="btn-back-login" onclick="window.location.href='index.html'">← Ana Sayfaya Dön</button>

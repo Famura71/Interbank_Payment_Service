@@ -55,4 +55,14 @@ public class UserDao {
                 .setParameter("email", email)
                 .uniqueResult();
     }
+    
+    // Login için: email, password ve banka kontrolü
+    public User login(String email, String password, String bankName) {
+        return getSession()
+                .createQuery("FROM User u WHERE u.email = :email AND u.password = :password AND u.bank.bankName = :bankName", User.class)
+                .setParameter("email", email)
+                .setParameter("password", password)
+                .setParameter("bankName", bankName)
+                .uniqueResult();
+    }
 }

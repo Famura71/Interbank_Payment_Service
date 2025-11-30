@@ -1,129 +1,109 @@
-// Bank A için kullanıcı bilgileri
-const bankAUsers = {
-    'admin': 'admin123',
-    'user1': 'pass1'
-};
 
-// Bank B için kullanıcı bilgileri
-const bankBUsers = {
-    'admin': 'admin123',
-    'user2': 'pass2'
-};
 
-// Bank C için kullanıcı bilgileri
-const bankCUsers = {
-    'admin': 'admin123',
-    'user3': 'pass3'
-};
-
+// Bank A Login
 function loginBankA(event) {
-    event.preventDefault();
-    const username = document.getElementById('username').value;
+    event.preventDefault(); // Formun normal submit olmasını engelle
+    
+    const email = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('error-message');
-
-    if (bankAUsers[username] && bankAUsers[username] === password) {
-        sessionStorage.setItem('bankA_logged_in', 'true');
-        sessionStorage.setItem('bankA_username', username);
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('content-section').style.display = 'block';
-        return false;
-    } else {
-        errorMessage.textContent = 'Kullanıcı adı veya şifre hatalı!';
-        errorMessage.style.display = 'block';
-        return false;
-    }
+    
+    console.log('loginBankA çağrıldı:', email); // Debug için
+    
+    login(email, password, 'Bank A', 'bankA');
+    return false; // Ek güvenlik
 }
 
+// Bank B Login
 function loginBankB(event) {
     event.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('error-message');
     
-    if (bankBUsers[username] && bankBUsers[username] === password) {
-        sessionStorage.setItem('bankB_logged_in', 'true');
-        sessionStorage.setItem('bankB_username', username);
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('content-section').style.display = 'block';
-        return false;
-    } else {
-        errorMessage.textContent = 'Kullanıcı adı veya şifre hatalı!';
-        errorMessage.style.display = 'block';
-        return false;
-    }
+    const email = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    console.log('loginBankB çağrıldı:', email);
+    
+    login(email, password, 'Bank B', 'bankB');
+    return false;
 }
 
+// Bank C Login
 function loginBankC(event) {
     event.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('error-message');
     
-    if (bankCUsers[username] && bankCUsers[username] === password) {
-        sessionStorage.setItem('bankC_logged_in', 'true');
-        sessionStorage.setItem('bankC_username', username);
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('content-section').style.display = 'block';
-        return false;
-    } else {
-        errorMessage.textContent = 'Kullanıcı adı veya şifre hatalı!';
+    const email = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    console.log('loginBankC çağrıldı:', email);
+    
+    login(email, password, 'Bank C', 'bankC');
+    return false;
+}
+
+// Genel login fonksiyonu
+function login(email, password, bankName, bankKey) {
+    const errorMessage = document.getElementById('error-message');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    
+    console.log('Login fonksiyonu çağrıldı:', email, bankName); // Debug
+    
+    // Backend'e POST isteği gönder
+    fetch('http://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&bankName=${encodeURIComponent(bankName)}`
+    })
+    .then(response => {
+        console.log('Response alındı, status:', response.status);
+        if (!response.ok) {
+            throw new Error('HTTP error ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            // Giriş başarılı
+            sessionStorage.setItem(bankKey + '_logged_in', 'true');
+            sessionStorage.setItem(bankKey + '_email', email);
+            window.location.href = 'denemexd.html';
+        } else {
+            // Giriş başarısız
+            errorMessage.textContent = data.message;
+            errorMessage.style.display = 'block';
+            usernameInput.value = '';
+            passwordInput.value = '';
+            usernameInput.placeholder = 'Yanlış girdiniz';
+        }
+    })
+    .catch(error => {
+        console.error('Fetch hatası:', error);
+        errorMessage.textContent = 'Bağlantı hatası: ' + error.message;
         errorMessage.style.display = 'block';
-        return false;
-    }
+        usernameInput.value = '';
+        passwordInput.value = '';
+        usernameInput.placeholder = 'Yanlış girdiniz';
+    });
 }
 
+// Logout fonksiyonları
 function logoutBankA() {
     sessionStorage.removeItem('bankA_logged_in');
-    sessionStorage.removeItem('bankA_username');
-    document.getElementById('content-section').style.display = 'none';
-    document.getElementById('login-section').style.display = 'block';
+    sessionStorage.removeItem('bankA_email');
+    window.location.href = 'bankA.html';
 }
 
 function logoutBankB() {
     sessionStorage.removeItem('bankB_logged_in');
-    sessionStorage.removeItem('bankB_username');
-    document.getElementById('content-section').style.display = 'none';
-    document.getElementById('login-section').style.display = 'block';
+    sessionStorage.removeItem('bankB_email');
+    window.location.href = 'bankB.html';
 }
 
 function logoutBankC() {
     sessionStorage.removeItem('bankC_logged_in');
-    sessionStorage.removeItem('bankC_username');
-    document.getElementById('content-section').style.display = 'none';
-    document.getElementById('login-section').style.display = 'block';
-}
-    if (!sessionStorage.getItem('bankA_logged_in')) {
-        window.location.href = 'bankA-login.html';
-    }
-}
-
-function checkBankBLogin() {
-    if (!sessionStorage.getItem('bankB_logged_in')) {
-        window.location.href = 'bankB-login.html';
-    }
-}
-
-function checkBankCLogin() {
-    if (!sessionStorage.getItem('bankC_logged_in')) {
-        window.location.href = 'bankC-login.html';
-    }
-}
-
-function logoutBankA() {
-    sessionStorage.removeItem('bankA_logged_in');
-    sessionStorage.removeItem('bankA_username');
-    window.location.href = 'bankA-login.html';
-}
-
-function logoutBankB() {
-    sessionStorage.removeItem('bankB_logged_in');
-    sessionStorage.removeItem('bankB_username');
-    window.location.href = 'bankB-login.html';
-}
-
-function logoutBankC() {
-    sessionStorage.removeItem('bankC_logged_in');
-    sessionStorage.removeItem('bankC_username');
-    window.location.href = 'bankC-login.html';
+    sessionStorage.removeItem('bankC_email');
+    window.location.href = 'bankC.html';
 }
