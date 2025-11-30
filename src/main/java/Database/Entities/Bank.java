@@ -21,6 +21,7 @@ public class Bank {
     @Column(nullable = false)
     private int cut;
 
+
     //empty constructor to not get errors
     public Bank() {}
 
@@ -41,6 +42,4 @@ public class Bank {
     public void setCut(int cut){
         this.cut = cut;
     }
-
-
 }
