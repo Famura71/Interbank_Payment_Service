@@ -36,4 +36,15 @@
         <url-pattern>/ws/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>transaction</servlet-name>
+        <servlet-class>Api.TransactionServlet</servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>transaction</servlet-name>
+        <url-pattern>/transaction</url-pattern>
+    </servlet-mapping>
+
 </web-app>

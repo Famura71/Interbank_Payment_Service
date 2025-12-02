@@ -95,32 +95,55 @@
         const receiverBank = document.getElementById('receiverBank').value;
         const amount = parseFloat(document.getElementById('amount').value);
         const description = document.getElementById('description').value;
+        const user = JSON.parse(sessionStorage.getItem('bankA_user'));
 
         if (!receiverName || !receiverBank || !amount || amount <= 0) {
             showMessage('Lütfen tüm alanları doldurun!', 'error');
             return false;
         }
 
-        // Kullanıcı bilgilerini al
-        const user = JSON.parse(sessionStorage.getItem('bankA_user'));
-        
-        // Bakiye kontrolü
         if (amount > user.balance) {
             showMessage('❌ Yetersiz bakiye! Mevcut bakiye: ' + user.balance.toFixed(2) + ' TL', 'error');
             return false;
         }
 
-        // Bakiyeyi güncelle
-        user.balance = parseFloat(user.balance) - amount;
-        sessionStorage.setItem('bankA_user', JSON.stringify(user));
+        // Backend'e application/x-www-form-urlencoded isteği gönder
+        const params = new URLSearchParams();
+        params.append('type', 'transfer');
+        params.append('userEmail', user.email);
+        params.append('amount', String(amount));
+        params.append('description', description);
+        params.append('bankName', 'Bank A');
+        params.append('receiverName', receiverName);
+        params.append('receiverBank', receiverBank);
 
-        // Başarı mesajı göster
-        showMessage(`✓ ${receiverName} (Bank ${receiverBank}) kişisine ${amount.toFixed(2)} TL başarıyla gönderildi!`, 'success');
+        fetch('/transaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: params.toString()
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Bakiyeyi güncelle
+                user.balance = parseFloat(user.balance) - amount;
+                sessionStorage.setItem('bankA_user', JSON.stringify(user));
 
-        // 2 saniye sonra bankA.html'e yönlendir
-        setTimeout(() => {
-            window.location.href = 'bankA.html';
-        }, 2000);
+                showMessage(`✓ ${receiverName} (Bank ${receiverBank}) kişisine ${amount.toFixed(2)} TL başarıyla gönderildi!`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'bankA.html';
+                }, 2000);
+            } else {
+                showMessage('❌ İşlem başarısız: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('❌ Bağlantı hatası!', 'error');
+        });
 
         return false;
     }

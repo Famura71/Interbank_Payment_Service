@@ -23,7 +23,7 @@
         </div>
 
         <div class="transaction-form">
-            <h3>💰 Para Yatırma İşlemi</h3>
+            <h3> Para Yatırma İşlemi</h3>
             <form onsubmit="return handleDeposit(event)">
                 <div class="form-group">
                     <label for="amount">Yatırılacak Miktar (TL)</label>
@@ -47,67 +47,6 @@
 </div>
 
 <script src="scripts/login.js"></script>
-<script>
-    // Sayfa yüklendiğinde kullanıcı bilgilerini göster
-    window.onload = function() {
-        const isLoggedIn = sessionStorage.getItem('bankA_logged_in') === 'true';
-        
-        if (!isLoggedIn) {
-            alert('Lütfen önce giriş yapın!');
-            window.location.href = 'bankA.html';
-            return;
-        }
-
-        const userRaw = sessionStorage.getItem('bankA_user');
-        if (userRaw) {
-            try {
-                const user = JSON.parse(userRaw);
-                document.getElementById('user-name').textContent = 'İsim: ' + (user.name || '');
-                document.getElementById('user-email').textContent = 'Email: ' + (user.email || '');
-                document.getElementById('user-balance').textContent = 'Mevcut Bakiye: ' + 
-                    (typeof user.balance === 'number' ? user.balance.toFixed(2) : '0.00') + ' TL';
-            } catch (e) {
-                console.error('Kullanıcı bilgisi okunamadı', e);
-            }
-        }
-    };
-
-    function handleDeposit(event) {
-        event.preventDefault();
-        
-        const amount = parseFloat(document.getElementById('amount').value);
-        const description = document.getElementById('description').value;
-        const messageDiv = document.getElementById('message');
-
-        if (!amount || amount <= 0) {
-            showMessage('Lütfen geçerli bir miktar girin!', 'error');
-            return false;
-        }
-
-        // Kullanıcı bilgilerini al
-        const user = JSON.parse(sessionStorage.getItem('bankA_user'));
-        
-        // Bakiyeyi güncelle
-        user.balance = parseFloat(user.balance) + amount;
-        sessionStorage.setItem('bankA_user', JSON.stringify(user));
-
-        // Başarı mesajı göster
-        showMessage(`✓ ${amount.toFixed(2)} TL başarıyla yatırıldı!`, 'success');
-
-        // 2 saniye sonra bankA.html'e yönlendir
-        setTimeout(() => {
-            window.location.href = 'bankA.html';
-        }, 2000);
-
-        return false;
-    }
-
-    function showMessage(text, type) {
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = text;
-        messageDiv.className = 'message ' + type;
-        messageDiv.style.display = 'block';
-    }
-</script>
+<script src="scripts/depositA.js"></script>
 </body>
 </html>

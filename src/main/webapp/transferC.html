@@ -107,14 +107,42 @@
             return false;
         }
 
-        user.balance = parseFloat(user.balance) - amount;
-        sessionStorage.setItem('bankC_user', JSON.stringify(user));
+        // Backend'e application/x-www-form-urlencoded isteği gönder
+        const params = new URLSearchParams();
+        params.append('type', 'transfer');
+        params.append('userEmail', user.email);
+        params.append('amount', String(amount));
+        params.append('description', description);
+        params.append('bankName', 'Bank C');
+        params.append('receiverName', receiverName);
+        params.append('receiverBank', receiverBank);
 
-        showMessage(`✓ ${receiverName} (Bank ${receiverBank}) kişisine ${amount.toFixed(2)} TL başarıyla gönderildi!`, 'success');
+        fetch('/transaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: params.toString()
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                user.balance = parseFloat(user.balance) - amount;
+                sessionStorage.setItem('bankC_user', JSON.stringify(user));
 
-        setTimeout(() => {
-            window.location.href = 'bankC.html';
-        }, 2000);
+                showMessage(`✓ ${receiverName} (Bank ${receiverBank}) kişisine ${amount.toFixed(2)} TL başarıyla gönderildi!`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'bankC.html';
+                }, 2000);
+            } else {
+                showMessage('❌ İşlem başarısız: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('❌ Bağlantı hatası!', 'error');
+        });
 
         return false;
     }

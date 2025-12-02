@@ -83,14 +83,41 @@
         }
 
         const user = JSON.parse(sessionStorage.getItem('bankB_user'));
-        user.balance = parseFloat(user.balance) + amount;
-        sessionStorage.setItem('bankB_user', JSON.stringify(user));
 
-        showMessage(`✓ ${amount.toFixed(2)} TL başarıyla yatırıldı!`, 'success');
+        // Backend'e application/x-www-form-urlencoded isteği gönder
+        const params = new URLSearchParams();
+        params.append('type', 'deposit');
+        params.append('userEmail', user.email);
+        params.append('amount', String(amount));
+        params.append('description', description);
+        params.append('bankName', 'Bank B');
 
-        setTimeout(() => {
-            window.location.href = 'bankB.html';
-        }, 2000);
+        fetch('/transaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: params.toString()
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                user.balance = parseFloat(user.balance) + amount;
+                sessionStorage.setItem('bankB_user', JSON.stringify(user));
+
+                showMessage(` ${amount.toFixed(2)} TL başarıyla yatırıldı!`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'bankB.html';
+                }, 2000);
+            } else {
+                showMessage(' İşlem başarısız: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage(' Bağlantı hatası!', 'error');
+        });
 
         return false;
     }
