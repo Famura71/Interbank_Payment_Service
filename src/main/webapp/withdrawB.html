@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank B - Para Çek</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div class="container bank-page">
+    <h1 class="main-title" onclick="window.location.href='index.html'">Interbank Payment Service</h1>
+
+    <div class="bank-header">
+        <h2>Bank B - Para Çek</h2>
+        <button class="btn-back" onclick="window.location.href='bankB.html'">Geri</button>
+    </div>
+
+    <div class="bank-content-box bank-b-box">
+        <div class="user-info">
+            <p id="user-name"></p>
+            <p id="user-email"></p>
+            <p id="user-balance"></p>
+        </div>
+
+        <div class="transaction-form">
+            <h3>💸 Para Çekme İşlemi</h3>
+            <form onsubmit="return handleWithdraw(event)">
+                <div class="form-group">
+                    <label for="amount">Çekilecek Miktar (TL)</label>
+                    <input type="number" id="amount" name="amount" required 
+                           placeholder="Örn: 500" min="1" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Açıklama (İsteğe Bağlı)</label>
+                    <textarea id="description" name="description" rows="3" 
+                              placeholder="İşlem açıklaması..."></textarea>
+                </div>
+
+                <div id="message" class="message" style="display: none;"></div>
+
+                <button type="submit" class="btn-submit btn-bank-b">Çek</button>
+                <button type="button" class="btn-cancel" onclick="window.location.href='bankB.html'">İptal</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/login.js"></script>
+<script>
+    window.onload = function() {
+        const isLoggedIn = sessionStorage.getItem('bankB_logged_in') === 'true';
+        
+        if (!isLoggedIn) {
+            alert('Lütfen önce giriş yapın!');
+            window.location.href = 'bankB.html';
+            return;
+        }
+
+        const userRaw = sessionStorage.getItem('bankB_user');
+        if (userRaw) {
+            try {
+                const user = JSON.parse(userRaw);
+                document.getElementById('user-name').textContent = 'İsim: ' + (user.name || '');
+                document.getElementById('user-email').textContent = 'Email: ' + (user.email || '');
+                document.getElementById('user-balance').textContent = 'Mevcut Bakiye: ' + 
+                    (typeof user.balance === 'number' ? user.balance.toFixed(2) : '0.00') + ' TL';
+            } catch (e) {
+                console.error('Kullanıcı bilgisi okunamadı', e);
+            }
+        }
+    };
+
+    function handleWithdraw(event) {
+        event.preventDefault();
+        
+        const amount = parseFloat(document.getElementById('amount').value);
+        const description = document.getElementById('description').value;
+
+        if (!amount || amount <= 0) {
+            showMessage('Lütfen geçerli bir miktar girin!', 'error');
+            return false;
+        }
+
+        const user = JSON.parse(sessionStorage.getItem('bankB_user'));
+        
+        if (amount > user.balance) {
+            showMessage('❌ Yetersiz bakiye! Mevcut bakiye: ' + user.balance.toFixed(2) + ' TL', 'error');
+            return false;
+        }
+
+        user.balance = parseFloat(user.balance) - amount;
+        sessionStorage.setItem('bankB_user', JSON.stringify(user));
+
+        showMessage(`✓ ${amount.toFixed(2)} TL başarıyla çekildi!`, 'success');
+
+        setTimeout(() => {
+            window.location.href = 'bankB.html';
+        }, 2000);
+
+        return false;
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = 'message ' + type;
+        messageDiv.style.display = 'block';
+    }
+</script>
+</body>
+</html>

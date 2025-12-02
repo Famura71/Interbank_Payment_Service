@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank A - Para Yatır</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div class="container bank-page">
+    <h1 class="main-title" onclick="window.location.href='index.html'">Interbank Payment Service</h1>
+
+    <div class="bank-header">
+        <h2>Bank A - Para Yatır</h2>
+        <button class="btn-back" onclick="window.location.href='bankA.html'">Geri</button>
+    </div>
+
+    <div class="bank-content-box bank-a-box">
+        <div class="user-info">
+            <p id="user-name"></p>
+            <p id="user-email"></p>
+            <p id="user-balance"></p>
+        </div>
+
+        <div class="transaction-form">
+            <h3>💰 Para Yatırma İşlemi</h3>
+            <form onsubmit="return handleDeposit(event)">
+                <div class="form-group">
+                    <label for="amount">Yatırılacak Miktar (TL)</label>
+                    <input type="number" id="amount" name="amount" required 
+                           placeholder="Örn: 1000" min="1" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Açıklama (İsteğe Bağlı)</label>
+                    <textarea id="description" name="description" rows="3" 
+                              placeholder="İşlem açıklaması..."></textarea>
+                </div>
+
+                <div id="message" class="message" style="display: none;"></div>
+
+                <button type="submit" class="btn-submit btn-bank-a">Yatır</button>
+                <button type="button" class="btn-cancel" onclick="window.location.href='bankA.html'">İptal</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/login.js"></script>
+<script>
+    // Sayfa yüklendiğinde kullanıcı bilgilerini göster
+    window.onload = function() {
+        const isLoggedIn = sessionStorage.getItem('bankA_logged_in') === 'true';
+        
+        if (!isLoggedIn) {
+            alert('Lütfen önce giriş yapın!');
+            window.location.href = 'bankA.html';
+            return;
+        }
+
+        const userRaw = sessionStorage.getItem('bankA_user');
+        if (userRaw) {
+            try {
+                const user = JSON.parse(userRaw);
+                document.getElementById('user-name').textContent = 'İsim: ' + (user.name || '');
+                document.getElementById('user-email').textContent = 'Email: ' + (user.email || '');
+                document.getElementById('user-balance').textContent = 'Mevcut Bakiye: ' + 
+                    (typeof user.balance === 'number' ? user.balance.toFixed(2) : '0.00') + ' TL';
+            } catch (e) {
+                console.error('Kullanıcı bilgisi okunamadı', e);
+            }
+        }
+    };
+
+    function handleDeposit(event) {
+        event.preventDefault();
+        
+        const amount = parseFloat(document.getElementById('amount').value);
+        const description = document.getElementById('description').value;
+        const messageDiv = document.getElementById('message');
+
+        if (!amount || amount <= 0) {
+            showMessage('Lütfen geçerli bir miktar girin!', 'error');
+            return false;
+        }
+
+        // Kullanıcı bilgilerini al
+        const user = JSON.parse(sessionStorage.getItem('bankA_user'));
+        
+        // Bakiyeyi güncelle
+        user.balance = parseFloat(user.balance) + amount;
+        sessionStorage.setItem('bankA_user', JSON.stringify(user));
+
+        // Başarı mesajı göster
+        showMessage(`✓ ${amount.toFixed(2)} TL başarıyla yatırıldı!`, 'success');
+
+        // 2 saniye sonra bankA.html'e yönlendir
+        setTimeout(() => {
+            window.location.href = 'bankA.html';
+        }, 2000);
+
+        return false;
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = 'message ' + type;
+        messageDiv.style.display = 'block';
+    }
+</script>
+</body>
+</html>

@@ -54,44 +54,15 @@
             
             <!-- Özel içerik yerine butonlar -->
             <div class="action-buttons">
-                <button class="btn-action btn-deposit" onclick="showDepositModal()">
+                <button class="btn-action btn-deposit" onclick="window.location.href='depositC.html'">
                     💰 Para Yatır
                 </button>
-                <button class="btn-action btn-withdraw" onclick="showWithdrawModal()">
+                <button class="btn-action btn-withdraw" onclick="window.location.href='withdrawC.html'">
                     💸 Para Çek
                 </button>
-                <button class="btn-action btn-transfer" onclick="showTransferModal()">
+                <button class="btn-action btn-transfer" onclick="window.location.href='transferC.html'">
                     🔄 Para Gönder
                 </button>
-            </div>
-        </div>
-
-        <!-- Modaller -->
-        <div id="depositModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('depositModal')">&times;</span>
-                <h3>Para Yatır</h3>
-                <input type="number" id="depositAmount" placeholder="Miktar" min="1">
-                <button onclick="deposit()">Yatır</button>
-            </div>
-        </div>
-
-        <div id="withdrawModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('withdrawModal')">&times;</span>
-                <h3>Para Çek</h3>
-                <input type="number" id="withdrawAmount" placeholder="Miktar" min="1">
-                <button onclick="withdraw()">Çek</button>
-            </div>
-        </div>
-
-        <div id="transferModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('transferModal')">&times;</span>
-                <h3>Para Gönder</h3>
-                <input type="text" id="receiverName" placeholder="Alıcı Adı">
-                <input type="number" id="transferAmount" placeholder="Miktar" min="1">
-                <button onclick="transfer()">Gönder</button>
             </div>
         </div>
     </div>
