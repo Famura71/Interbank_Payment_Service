@@ -49,7 +49,7 @@ public class TransactionConsumer {
             String type = json.get("type").asText();
             String userEmail = json.get("userEmail").asText();
             double amount = json.get("amount").asDouble();
-            String bankName = json.get("bankName").asText();
+            String bankName = normalizeBankName(json.get("bankName").asText());
 
             // Kullanıcıyı bul
             User user = userDao.getByEmail(userEmail);
@@ -126,7 +126,7 @@ public class TransactionConsumer {
         }
 
         String receiverName = json.get("receiverName").asText();
-        String receiverBank = json.get("receiverBank").asText();
+        String receiverBank = normalizeBankName(json.get("receiverBank").asText());
 
         // Gönderenin bakiyesini azalt
         double newBalance = sender.getBalance() - amount;
@@ -136,8 +136,9 @@ public class TransactionConsumer {
         // Gönderen için log
         saveTransactionLog(bankName, sender, amount, "TRANSFER_OUT");
 
-        // Alıcıyı bul ve bakiyesini artır
-        User receiver = userDao.getByName(receiverName);
+        // Alıcıyı (isim + banka) bularak bakiyesini artır
+        User receiver = userDao.getByNameAndBank(receiverName, receiverBank);
+
         if (receiver != null) {
             double receiverNewBalance = receiver.getBalance() + amount;
             receiver.setBalance(receiverNewBalance);
@@ -187,6 +188,27 @@ public class TransactionConsumer {
             default:
                 System.err.println("⚠️ Bilinmeyen Banka: " + bankName);
                 break;
+        }
+    }
+
+    /**
+     * Frontend'den gelen banka kodunu (A/B/C veya tam isim) standart tam banka adına çevirir.
+     */
+    private String normalizeBankName(String raw) {
+        if (raw == null) return null;
+
+        switch (raw.trim()) {
+            case "A":
+            case "Bank A":
+                return "Bank A";
+            case "B":
+            case "Bank B":
+                return "Bank B";
+            case "C":
+            case "Bank C":
+                return "Bank C";
+            default:
+                return raw.trim();
         }
     }
 }

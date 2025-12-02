@@ -68,11 +68,22 @@ public class UserDao {
                 .setParameter("bankName", bankName)
                 .uniqueResult();
     }
-    // User isminden Kullanıcıyı bulma (KAFKA İÇİN GEREKLİ)
+    // User isminden kullanıcıyı bulma (tüm bankalar içinde)
     public User getByName(String name) {
         return getSession()
                 .createQuery("FROM User WHERE name = :name", User.class)
                 .setParameter("name", name)
+                .uniqueResult();
+    }
+
+    // User isminden ve banka adına göre kullanıcıyı bulma (transfer için daha güvenli)
+    public User getByNameAndBank(String name, String bankName) {
+        return getSession()
+                .createQuery(
+                        "SELECT u FROM User u JOIN u.bank b WHERE u.name = :name AND b.bankName = :bankName",
+                        User.class)
+                .setParameter("name", name)
+                .setParameter("bankName", bankName)
                 .uniqueResult();
     }
 }
