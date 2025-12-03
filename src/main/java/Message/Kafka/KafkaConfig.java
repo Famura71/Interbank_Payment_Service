@@ -17,11 +17,11 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-@Configuration //springe config dosyası
-@EnableKafka //producer-consumer çalışsın
+@Configuration //springe config file
+@EnableKafka
 public class KafkaConfig {
 
-    // Kafka sunucu adresi
+    // Kafka server adress
     private static final String BOOTSTRAP_SERVERS = "localhost:9092";
 
     // Producer Configuration (Mesaj gönderen)
@@ -34,12 +34,12 @@ public class KafkaConfig {
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
-    @Bean //kafkaya nasıl mesaj gönderilecek
+    @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    // Consumer Configuration (Mesaj okuyan) - Opsiyonel
+    // Consumer Configuration
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();

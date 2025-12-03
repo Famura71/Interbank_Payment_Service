@@ -12,10 +12,10 @@ import org.springframework.kafka.core.KafkaAdmin;
 @Configuration
 public class KafkaTopicConfig {
 
-    // Kafka sunucu adresi
+    // Kafka server adress
     private static final String BOOTSTRAP_SERVERS = "localhost:9092";
 
-    // Kafka Admin (Topic yönetimi için)
+    // Kafka Admin
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
@@ -23,13 +23,13 @@ public class KafkaTopicConfig {
         return new KafkaAdmin(configs);
     }
 
-    // Topic tanımı: payment-transactions
+    //Payment-transactions
     @Bean
     public NewTopic paymentTransactionsTopic() {
         return new NewTopic(
-            "payment-transactions",  // Topic adı
-            1,                        // Partition sayısı, topic kaça bölünsün, pararlel işleme için her partitionu
-            (short) 1                 // Replication factor
+            "payment-transactions",  // Topic name
+            1,              // Partition number
+            (short) 1                      // Replication factor
         );
     }
 }

@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import Database.Entities.Bank;
 import Database.Entities.Cut;
 
-@Repository        // Spring'e bu sınıfın bir DAO/repository olduğunu söylüyor
-@Transactional     // Her metotta otomatik transaction aç/kapa
+@Repository  
+@Transactional    
 public class CutDao {
     @Autowired
     private SessionFactory sessionFactory;

@@ -1,13 +1,13 @@
 package Database.DAO;
 
 import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-// ÖNEMLİ: Entity sınıfını import ediyoruz
 import Database.Entities.BankATransaction;
 
 @Repository
@@ -21,28 +21,28 @@ public class BankATransactionDao {
         return sessionFactory.getCurrentSession();
     }
 
-    // CREATE (DÜZELTİLDİ: Artık parametre olarak Entity alıyor)
+    // CREATE
     public void save(BankATransaction tr) {
         getSession().persist(tr);
     }
 
-    // UPDATE (DÜZELTİLDİ)
+    // UPDATE
     public void update(BankATransaction tr) {
         getSession().merge(tr);
     }
 
-    // DELETE (DÜZELTİLDİ)
+    // DELETE
     public void delete(BankATransaction tr) {
         getSession().remove(tr);
     }
 
-    // READ by ID (DÜZELTİLDİ: Entity döndürüyor)
+    // READ by ID
     // Not: BankATransaction entity'sinde ID String tanımlandığı için burayı String yaptım
     public BankATransaction getById(String id) {
         return getSession().find(BankATransaction.class, id);
     }
 
-    // READ all (DÜZELTİLDİ: Entity listesi döndürüyor)
+    // READ all
     public List<BankATransaction> getAll() {
         return getSession()
                 .createQuery("FROM BankATransaction", BankATransaction.class)

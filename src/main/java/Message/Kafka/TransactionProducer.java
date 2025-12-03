@@ -7,33 +7,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionProducer {
 
-    // Spring'den KafkaTemplate iste
+    // Take KafkaTemplate from Spring
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    // Topic adı
+    // Topic name
     private static final String TOPIC = "payment-transactions";
 
     /**
-     * Transaction'ı Kafka'ya gönder
+     * Send the Transaction to Kafka
      * 
      * @param transactionId Transaction ID (key)
      * @param transactionData Transaction verisi (JSON string)
      */
     public void sendTransaction(String transactionId, String transactionData) {
         try {
-            // Kafka'ya gönder
+            // Send to Kafka
             kafkaTemplate.send(TOPIC, transactionId, transactionData);
             
             // Log
-            System.out.println("✅ Transaction sent to Kafka:");
+            System.out.println("Transaction sent to Kafka:");
             System.out.println("  Topic: " + TOPIC);
             System.out.println("  Key: " + transactionId);
             System.out.println("  Data: " + transactionData);
             
         } catch (Exception e) {
             // Hata yakalama
-            System.err.println("❌ Failed to send transaction to Kafka: " + e.getMessage());
+            System.err.println("Failed to send transaction to Kafka: " + e.getMessage());
             e.printStackTrace();
         }
     }

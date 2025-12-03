@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = {"Database", "Message.Kafka"}) // ← Kafka paketini ekle
 public class HibernateConfig {
 
-    // 1️⃣ DataSource: MySQL bağlantısı
+    //MySQL bconnection
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
@@ -29,14 +29,14 @@ public class HibernateConfig {
         return ds;
     }
 
-    // 2️⃣ SessionFactory: Hibernate'in DB ile konuşmasını sağlar
+    //Session start
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setPackagesToScan("Database.Entities"); // Entity sınıflarını tara
 
-        // Hibernate özellikleri
+        //Hibernate properties
         Properties hibernateProperties = new Properties();
         hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         hibernateProperties.put("hibernate.show_sql", "true");      // Konsola SQL yaz
@@ -46,7 +46,7 @@ public class HibernateConfig {
         return sessionFactory;
     }
 
-    // 3️⃣ Transaction Manager: DB işlemlerinin bütünlüğünü sağlar
+    //Transaction Manager for Hibernate
     @Bean
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
         HibernateTransactionManager txManager = new HibernateTransactionManager();

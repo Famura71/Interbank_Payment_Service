@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 public class BankCTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // ← TXN-20251129235959
+    private Long id;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -35,6 +35,8 @@ public class BankCTransaction {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    //Getters-Setters
+    
     public Long getId(){
         return id;
     }

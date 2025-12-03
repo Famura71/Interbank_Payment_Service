@@ -16,7 +16,7 @@ public class PaymentEndpoint {
 
     private static final String NAMESPACE = "http://interbank.com/payment";
 
-    // Kafka Producer'ı enjekte et
+    // Kafka Producer
     @Autowired
     private TransactionProducer transactionProducer;
 
@@ -27,10 +27,10 @@ public class PaymentEndpoint {
         System.out.println("SOAP İsteği Alındı:");
         System.out.println(req.sender + " → " + req.receiver + " (" + req.amount + ")");
 
-        // Transaction ID oluştur
+        //Create Transaction ID
         String transactionId = generateTransactionId();
 
-        // Transaction data'yı JSON formatında hazırla
+        // Make Transaction data in JSON format
         String transactionData = createTransactionJson(
             transactionId,
             req.sender,
@@ -38,27 +38,23 @@ public class PaymentEndpoint {
             req.amount
         );
 
-        // Kafka'ya gönder
+        // Send to Kafka
         transactionProducer.sendTransaction(transactionId, transactionData);
 
-        // Response döndür
+        // Return response
         PaymentResponse res = new PaymentResponse();
         res.status = "SUCCESS";
 
         return res;
     }
 
-    /**
-     * Unique transaction ID oluştur
-     */
+    //Create unique transaction id
     private String generateTransactionId() {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         return "TXN-" + timestamp;
     }
 
-    /**
-     * Transaction'ı JSON formatına çevir
-     */
+    //Turn transacton to JSON format
     private String createTransactionJson(String id, String sender, String receiver, double amount) {
         return String.format(
             "{\"transactionId\":\"%s\",\"sender\":\"%s\",\"receiver\":\"%s\",\"amount\":%.2f,\"timestamp\":\"%s\"}",

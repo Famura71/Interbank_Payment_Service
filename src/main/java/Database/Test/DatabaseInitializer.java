@@ -12,35 +12,35 @@ import Database.Entities.User;
 public class DatabaseInitializer {
 
     public static void main(String[] args) {
-        System.out.println("🚀 Database Initializer başlatılıyor...");
+        System.out.println("Database Initializer başlatılıyor...");
 
-        // Spring Context'i başlat
+        // Start Spring context
         ApplicationContext context = new AnnotationConfigApplicationContext(HibernateConfig.class);
 
-        // DAO'ları al
+        // DAO objects
         BankDao bankDao = context.getBean(BankDao.class);
         UserDao userDao = context.getBean(UserDao.class);
 
         try {
-            // 1️⃣ Bankaları oluştur veya al
+            //Banks
             Bank bankA = createOrGetBank(bankDao, "Bank A", 5);
             Bank bankB = createOrGetBank(bankDao, "Bank B", 7);
             Bank bankC = createOrGetBank(bankDao, "Bank C", 10);
 
-            System.out.println("✅ Bankalar hazır!");
+            System.out.println("Bankalar hazır!");
 
-            // 2️⃣ Kullanıcıları oluştur
+            //Users
             createUserIfNotExists(userDao, "Famura", "famura@banka.com", "1234", 50.0, bankA);
             createUserIfNotExists(userDao, "Aybuke", "aybuke@banka.com", "4567", 75.0, bankB);
             createUserIfNotExists(userDao, "Tuna", "tuna@banka.com", "7890", 100.0, bankC);
 
-            System.out.println("✅ Kullanıcılar başarıyla eklendi!");
-            System.out.println("\n📋 Veritabanı Durumu:");
+            System.out.println("Kullanıcılar başarıyla eklendi!");
+            System.out.println("\nVeritabanı Durumu:");
             System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-            // Tüm kullanıcıları listele
+            // List all users
             userDao.getAll().forEach(user -> {
-                System.out.printf("👤 %s | Email: %s | Banka: %s | Bakiye: %.2f TL%n",
+                System.out.printf("%s | Email: %s | Banka: %s | Bakiye: %.2f TL%n",
                         user.getName(),
                         user.getEmail(),
                         user.getBank().getBankName(),
@@ -48,26 +48,24 @@ public class DatabaseInitializer {
             });
 
             System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            System.out.println("✅ İşlem tamamlandı!");
+            System.out.println("İşlem tamamlandı!");
 
         } catch (Exception e) {
-            System.err.println("❌ Hata oluştu: " + e.getMessage());
+            System.err.println("Hata oluştu: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            // Context'i kapat
+            // Close context
             ((AnnotationConfigApplicationContext) context).close();
-            System.out.println("🛑 Spring Context kapatıldı.");
+            System.out.println("Spring Context kapatıldı.");
         }
     }
 
-    /**
-     * Bankayı oluştur veya varsa getir
-     */
+    //Create or return bank
     private static Bank createOrGetBank(BankDao bankDao, String bankName, int cut) {
         Bank existingBank = bankDao.getByBankName(bankName);
 
         if (existingBank != null) {
-            System.out.println("ℹ️ " + bankName + " zaten mevcut.");
+            System.out.println(bankName + " zaten mevcut.");
             return existingBank;
         }
 
@@ -76,13 +74,11 @@ public class DatabaseInitializer {
         bank.setCut(cut);
         bankDao.save(bank);
 
-        System.out.println("✅ " + bankName + " oluşturuldu.");
+        System.out.println(bankName + " oluşturuldu.");
         return bank;
     }
 
-    /**
-     * Kullanıcı yoksa oluştur
-     */
+    //Create user if it doesn't exist
     private static void createUserIfNotExists(UserDao userDao, String name, String email,
                                                String password, double balance, Bank bank) {
         User existingUser = userDao.getByEmail(email);
@@ -100,6 +96,6 @@ public class DatabaseInitializer {
         user.setBank(bank);
 
         userDao.save(user);
-        System.out.println("✅ " + name + " (" + email + ") eklendi.");
+        System.out.println(name + " (" + email + ") eklendi.");
     }
 }

@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Database.Entities.User;
 
-@Repository        // Spring'e bu sinifin bir DAO/repository oldugunu soyluyor
-@Transactional     // Her metotta otomatik transaction ac/kapa
+@Repository        
+@Transactional     
 public class UserDao {
 
     @Autowired
@@ -68,7 +68,7 @@ public class UserDao {
                 .setParameter("bankName", bankName)
                 .uniqueResult();
     }
-    // User isminden kullanıcıyı bulma (tüm bankalar içinde)
+    // FIND user by name
     public User getByName(String name) {
         return getSession()
                 .createQuery("FROM User WHERE name = :name", User.class)
@@ -76,7 +76,7 @@ public class UserDao {
                 .uniqueResult();
     }
 
-    // User isminden ve banka adına göre kullanıcıyı bulma (transfer için daha güvenli)
+    // FIND user by name and bankName
     public User getByNameAndBank(String name, String bankName) {
         return getSession()
                 .createQuery(

@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Database.Entities.Bank;
 
-@Repository        // Spring'e bu sınıfın bir DAO/repository olduğunu söylüyor
-@Transactional     // Her metotta otomatik transaction aç/kapa
+@Repository
+@Transactional
 public class BankDao {
     @Autowired
     private SessionFactory sessionFactory;

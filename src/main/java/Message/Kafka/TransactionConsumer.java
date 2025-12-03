@@ -35,14 +35,14 @@ public class TransactionConsumer {
     @KafkaListener(topics = "payment-transactions", groupId = "payment-group")
     @Transactional
     public void listenTransaction(String message) {
-        System.out.println("📨 KAFKA: Mesaj alındı -> " + message);
+        System.out.println("KAFKA: Mesaj alındı -> " + message);
 
         try {
             JsonNode json = objectMapper.readTree(message);
 
-            // Gerekli alanları kontrol et
+           
             if (!json.has("type") || !json.has("userEmail") || !json.has("amount") || !json.has("bankName")) {
-                System.err.println("❌ HATA: Eksik veri geldi.");
+                System.err.println("HATA: Eksik veri geldi.");
                 return;
             }
 
@@ -51,14 +51,13 @@ public class TransactionConsumer {
             double amount = json.get("amount").asDouble();
             String bankName = normalizeBankName(json.get("bankName").asText());
 
-            // Kullanıcıyı bul
+            // Find user
             User user = userDao.getByEmail(userEmail);
             if (user == null) {
-                System.err.println("❌ HATA: Kullanıcı bulunamadı -> " + userEmail);
+                System.err.println("HATA: Kullanıcı bulunamadı -> " + userEmail);
                 return;
             }
 
-            // Transaction türüne göre işlem yap
             switch (type) {
                 case "deposit":
                     handleDeposit(user, amount, bankName);
@@ -70,73 +69,67 @@ public class TransactionConsumer {
                     handleTransfer(json, user, amount, bankName);
                     break;
                 default:
-                    System.err.println("⚠️ Bilinmeyen transaction türü: " + type);
+                    System.err.println("Bilinmeyen transaction türü: " + type);
             }
 
         } catch (Exception e) {
-            System.err.println("❌ HATA: " + e.getMessage());
+            System.err.println("HATA: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    /**
-     * DEPOSIT: Para yatırma
-     */
+    //Deposit
     private void handleDeposit(User user, double amount, String bankName) {
-        // Bakiyeyi artır
+        // Increase balance
         double newBalance = user.getBalance() + amount;
         user.setBalance(newBalance);
         userDao.update(user);
 
-        // Log tablosuna kaydet
+        // Log
         saveTransactionLog(bankName, user, amount, "DEPOSIT");
 
-        System.out.println("💰 DEPOSIT: " + user.getName() + " - Yeni bakiye: " + newBalance);
+        System.out.println("DEPOSIT: " + user.getName() + " - Yeni bakiye: " + newBalance);
     }
 
-    /**
-     * WITHDRAW: Para çekme
-     */
+    //Withdraw
     private void handleWithdraw(User user, double amount, String bankName) {
-        // Bakiye kontrolü
+        // Balance control
         if (user.getBalance() < amount) {
-            System.err.println("❌ Yetersiz bakiye: " + user.getName());
+            System.err.println("Yetersiz bakiye: " + user.getName());
             return;
         }
 
-        // Bakiyeyi azalt
+        // Lower balance
         double newBalance = user.getBalance() - amount;
         user.setBalance(newBalance);
         userDao.update(user);
 
-        // Log tablosuna kaydet
+        // Log
         saveTransactionLog(bankName, user, amount, "WITHDRAW");
 
-        System.out.println("💸 WITHDRAW: " + user.getName() + " - Yeni bakiye: " + newBalance);
+        System.out.println("WITHDRAW: " + user.getName() + " - Yeni bakiye: " + newBalance);
     }
 
-    /**
-     * TRANSFER: Para gönderme
-     */
+    //Transfer
     private void handleTransfer(JsonNode json, User sender, double amount, String bankName) {
-        // Bakiye kontrolü
+        // Balance control
         if (sender.getBalance() < amount) {
-            System.err.println("❌ Yetersiz bakiye: " + sender.getName());
+            System.err.println("Yetersiz bakiye: " + sender.getName());
             return;
         }
 
         String receiverName = json.get("receiverName").asText();
         String receiverBank = normalizeBankName(json.get("receiverBank").asText());
 
-        // Gönderenin bakiyesini azalt
+        // Lower senders balance
         double newBalance = sender.getBalance() - amount;
         sender.setBalance(newBalance);
         userDao.update(sender);
 
-        // Gönderen için log
+        // Log for sender
         saveTransactionLog(bankName, sender, amount, "TRANSFER_OUT");
 
-        // Alıcıyı (isim + banka) bularak bakiyesini artır
+        // Find receiver and increase balance
         User receiver = userDao.getByNameAndBank(receiverName, receiverBank);
 
         if (receiver != null) {
@@ -144,18 +137,16 @@ public class TransactionConsumer {
             receiver.setBalance(receiverNewBalance);
             userDao.update(receiver);
 
-            // Alıcı için log
+            // Log receiver
             saveTransactionLog(receiverBank, receiver, amount, "TRANSFER_IN");
 
-            System.out.println("🔄 TRANSFER: " + sender.getName() + " -> " + receiver.getName() + " (" + amount + " TL)");
+            System.out.println("TRANSFER: " + sender.getName() + " -> " + receiver.getName() + " (" + amount + " TL)");
         } else {
-            System.err.println("❌ Alıcı bulunamadı: " + receiverName);
+            System.err.println("Alıcı bulunamadı: " + receiverName);
         }
     }
 
-    /**
-     * Transaction log'unu ilgili banka tablosuna kaydet
-     */
+    //Save transaction log
     private void saveTransactionLog(String bankName, User user, double amount, String logType) {
         switch (bankName) {
             case "Bank A":
@@ -164,7 +155,7 @@ public class TransactionConsumer {
                 trA.setAmount(amount);
                 trA.setLogType(logType);
                 bankADao.save(trA);
-                System.out.println("✅ Log Bank A tablosuna yazıldı.");
+                System.out.println("Log Bank A tablosuna yazıldı.");
                 break;
 
             case "Bank B":
@@ -173,7 +164,7 @@ public class TransactionConsumer {
                 trB.setAmount(amount);
                 trB.setLogType(logType);
                 bankBDao.save(trB);
-                System.out.println("✅ Log Bank B tablosuna yazıldı.");
+                System.out.println("Log Bank B tablosuna yazıldı.");
                 break;
 
             case "Bank C":
@@ -182,18 +173,16 @@ public class TransactionConsumer {
                 trC.setAmount(amount);
                 trC.setLogType(logType);
                 bankCDao.save(trC);
-                System.out.println("✅ Log Bank C tablosuna yazıldı.");
+                System.out.println("Log Bank C tablosuna yazıldı.");
                 break;
 
             default:
-                System.err.println("⚠️ Bilinmeyen Banka: " + bankName);
+                System.err.println("Bilinmeyen Banka: " + bankName);
                 break;
         }
     }
 
-    /**
-     * Frontend'den gelen banka kodunu (A/B/C veya tam isim) standart tam banka adına çevirir.
-     */
+    //Change the code from front end to bank name
     private String normalizeBankName(String raw) {
         if (raw == null) return null;
 

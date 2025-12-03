@@ -1,13 +1,13 @@
 package Database.DAO;
 
 import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-// Entity sınıfını import ediyoruz
 import Database.Entities.BankCTransaction;
 
 @Repository
@@ -21,7 +21,7 @@ public class BankCTransactionDao {
         return sessionFactory.getCurrentSession();
     }
 
-    // CREATE (Parametre artık Entity: BankCTransaction)
+    // CREATE
     public void save(BankCTransaction tr) {
         getSession().persist(tr);
     }
@@ -36,7 +36,7 @@ public class BankCTransactionDao {
         getSession().remove(tr);
     }
 
-    // READ by ID (ID String yapıldı)
+    // READ by ID
     public BankCTransaction getById(String id) {
         return getSession().find(BankCTransaction.class, id);
     }
