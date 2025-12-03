@@ -39,13 +39,16 @@ function login(email, password, bankName, bankKey) {
     const passwordInput = document.getElementById('password');
 
     // Backend'e POST istegi gonder
-    fetch('http://localhost:8080/login', {
+    const API = window.API_URL || window.location.origin;
+
+    fetch(`${API}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&bankName=${encodeURIComponent(bankName)}`
     })
+
     .then(response => {
         if (!response.ok) {
             throw new Error('HTTP error ' + response.status);

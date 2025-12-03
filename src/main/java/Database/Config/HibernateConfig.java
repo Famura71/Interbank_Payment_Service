@@ -23,9 +23,11 @@ public class HibernateConfig {
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        ds.setUrl("jdbc:mysql://localhost:3306/mydb"); // Docker container'daki DB
-        ds.setUsername("user"); // Docker'da tanımlı kullanıcı
-        ds.setPassword("pass"); // Docker'da tanımlı şifre
+        ds.setUrl("jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true");
+        ds.setUsername("root");
+        ds.setPassword("root"); // Database container’ın root şifresi
+
+
         return ds;
     }
 

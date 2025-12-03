@@ -71,6 +71,7 @@
 </div>
 <script src="scripts/login.js"></script>
 <script>
+    window.API_URL = "https://unconsternated-theodore-nonedified.ngrok-free.dev";
     // Sayfa yuklendiginde kontrol et
     window.onload = function() {
         const isLoggedIn = sessionStorage.getItem('bankA_logged_in') === 'true';
@@ -134,13 +135,13 @@
 
         // Burada backend API'nize istek gönderebilirsiniz
         alert(`${amount} TL para yatırma işlemi başarılı!`);
-        
+
         // Bakiyeyi güncelle (örnek)
         const user = JSON.parse(sessionStorage.getItem('bankA_user'));
         user.balance = parseFloat(user.balance) + parseFloat(amount);
         sessionStorage.setItem('bankA_user', JSON.stringify(user));
         document.getElementById('bankA-user-balance').textContent = 'Bakiye: ' + user.balance.toFixed(2);
-        
+
         closeModal('depositModal');
         document.getElementById('depositAmount').value = '';
     }
@@ -149,7 +150,7 @@
     function withdraw() {
         const amount = document.getElementById('withdrawAmount').value;
         const user = JSON.parse(sessionStorage.getItem('bankA_user'));
-        
+
         if (!amount || amount <= 0) {
             alert('Lütfen geçerli bir miktar girin!');
             return;
@@ -162,12 +163,12 @@
 
         // Burada backend API'nize istek gönderebilirsiniz
         alert(`${amount} TL para çekme işlemi başarılı!`);
-        
+
         // Bakiyeyi güncelle
         user.balance = parseFloat(user.balance) - parseFloat(amount);
         sessionStorage.setItem('bankA_user', JSON.stringify(user));
         document.getElementById('bankA-user-balance').textContent = 'Bakiye: ' + user.balance.toFixed(2);
-        
+
         closeModal('withdrawModal');
         document.getElementById('withdrawAmount').value = '';
     }
@@ -177,7 +178,7 @@
         const receiverName = document.getElementById('receiverName').value;
         const amount = document.getElementById('transferAmount').value;
         const user = JSON.parse(sessionStorage.getItem('bankA_user'));
-        
+
         if (!receiverName || !amount || amount <= 0) {
             alert('Lütfen tüm alanları doldurun!');
             return;
@@ -190,12 +191,12 @@
 
         // Burada backend API'nize istek gönderebilirsiniz
         alert(`${receiverName} kişisine ${amount} TL gönderme işlemi başarılı!`);
-        
+
         // Bakiyeyi güncelle
         user.balance = parseFloat(user.balance) - parseFloat(amount);
         sessionStorage.setItem('bankA_user', JSON.stringify(user));
         document.getElementById('bankA-user-balance').textContent = 'Bakiye: ' + user.balance.toFixed(2);
-        
+
         closeModal('transferModal');
         document.getElementById('receiverName').value = '';
         document.getElementById('transferAmount').value = '';
